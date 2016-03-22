@@ -1,7 +1,10 @@
 
 ##Linux
-    ` git clone --recursive git@github.com:sdlylshl/vimfiles .vim `
+    `git clone --recursive git@github.com:rinetd/vimfiles .vim && .vim/install.sh`
+
+    ` git clone  git@github.com:sdlylshl/vimfiles .vim `
     ` git submodule update --init --recursive `
+    
     ` ln -sf .vim/gitconfig .gitconfig `
     ` ln -sf .vim/vimrc .vimrc `
     ` ./powerline-fonts/install.sh `
