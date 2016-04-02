@@ -1,2 +1,2 @@
-ln -sf .vim/vimrc .vimrc
-ln -sf .vim/gitconfig .gitconfig
+ln -sf .vim/vimrc ~/.vimrc
+ln -sf .vim/gitconfig ~/.gitconfig

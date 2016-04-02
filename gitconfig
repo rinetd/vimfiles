@@ -2,7 +2,8 @@
   name = rinetd
   email = rinetd@163.com
 [push]
-  default = simple                      #仅推送当前分支
+	default = current
+  #default = simple                      #仅推送当前分支
   #default = matching                   #推送所有改动的分支
 [http]
   postBuffer = 536870912
@@ -70,8 +71,6 @@
   e = !notepad2
   rmc = rm --cached               #将文件从暂存区stage移除
   cleans = clean -dfx             #清理
-  unstage = reset --hard          #用版本库内容清空暂存区
-  undo = reset --soft HEAD^       #undo last commit
   last-commit = log -1 HEAD       #last commit info
   last = !git show --name-status
   last-files = !git last --pretty=format:""
@@ -91,6 +90,18 @@
   ca = commit -a
   commits = commit -a
   cv= commit --verbose
+
+  #git revert HEAD                   #还原最近一次提交的修改
+  #git revert commit-id              # 还原指定版本的修改
+
+  #git checkout -- file；撤销对工作区修改；这个命令是以最新的存储时间节点（add和commit）为参照，覆盖工作区对应文件file；这个命令改变的是工作区
+  #git reset HEAD -- file；清空add命令向暂存区提交的关于file文件的修改（Ustage）；这个命令仅改变暂存区，并不改变工作区，这意味着在无任何其他操作的情况下，工作区中的实际文件同该命令运行之前无任何变化
+
+  unstage = reset --hard          #用版本库内容清空暂存区
+  undo = reset --soft HEAD^       #HEAD 最近提交 HEAD^ 上一次
+  #git reset –mixed：此为默认方式，不带任何参数的git reset，即时这种方式，它回退到某个版本，只保留源码，回退commit和index信息
+  #git reset –soft：回退到某个版本，只回退了commit的信息，不会恢复到index file一级。如果还要提交，直接commit即可
+  #git reset –hard：彻底回退到某个版本，本地的源码也会变为上一个版本的内容
 
   co = checkout
   com = checkout master
@@ -168,6 +179,7 @@
   rup = remote update
   rso = remote show origin             #查看服务器分支
 
+
   #rebase -i <>修改历史提交
   #1. git rebase -i HEAD~3
   #2. 修改pick -> edit
@@ -177,26 +189,28 @@
 
   #submodule
   ##关键命令init必须先执行
-  sbmi = submodule init
+  subi = submodule init
 
   #git submodule add -f https://github.com/VundleVim/Vundle.vim.git bundle/Vundle.vim
   #git remote add origin git@github.com:rinetd/vimfiles
   #git push --set-upstream origin master
 
   #1.添加 submodule add https://github.com/VundleVim/Vundle.vim.git bundle/Vundle.vim
-  #2.同步 submodule update --init --recursive
+  #2.同步
+  subinit = submodule update --init --recursive
+  subchk  = submodule foreach git checkout master
   #3.移除 submodule deinit -f bundle/Vundle.vim
 
-  sbm = submodule
-  sbms = submodule status
+  sub = submodule
+  subs = submodule status
   #1.添加一个子模块 需要注意 [欲放置的位置] 不能以 / 結尾（會造成修改不生效）、也不能已經是現有的路徑喔（不能順利 Clone）
   #git submodule add git@github.com:josephj/javascript-platform-yui.git static/platform
-  sbma = submodule add
+  suba = submodule add
   #更新子模块仓库 必须先init
-  sbmu = submodule update
-  sbmp = submodule foreach git pull
-  sbmcm = submodule foreach git checkout master
-  sbmcd = submodule foreach git checkout develop
+  subu = submodule update
+  subp = submodule foreach git pull
+  subcm = submodule foreach git checkout master
+  subcd = submodule foreach git checkout develop
 
 
   mlog = !git log --committer=\"`git user`\"
