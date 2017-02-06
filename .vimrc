@@ -1,4 +1,4 @@
-
+#!/usr/bin/env sh
 " -----------------------------------------------------------------------------
 "  < 判断操作系统是否是 Windows 还是 Linux >
 " -----------------------------------------------------------------------------
@@ -117,6 +117,108 @@ endif
 " =============================================================================
 "                            < 系统配置 >
 " =============================================================================
+" ================ Turn Off Swap Files ==============
+
+set noswapfile
+set nobackup
+set nowb
+
+" ================ Persistent Undo ==================
+" Keep undo history across sessions, by storing in file.
+" Only works all the time.
+if has('persistent_undo') && !isdirectory(expand('~').'/.vim/backups')
+  silent !mkdir ~/.vim/backups > /dev/null 2>&1
+  set undodir=~/.vim/backups
+  set undolevels=1000         " How many undos
+  set undoreload=10000        " number of lines to save for undo
+  set undofile                " So is persistent undo ...
+endif
+
+" ================ Indentation ======================
+set expandtab                                       "将Tab键转换为空格
+autocmd! FileType Makefile set noexpandtab          "Makefile文件不转换为空格
+
+set tabstop=4                                       "设置制表符Tab键宽度
+set softtabstop=4                                   "设置软制表符宽度
+set shiftwidth=4                                    "换行时自动缩进宽度
+set smarttab                                        "指定按一次backspace就删除shiftwidth宽度
+set backspace=indent,eol,start
+                          "indent: 如果用了:set indent,:set ai 等自动缩进，想用退格键将字段缩进的删掉，必须设置这个选项。否则不响应。
+                          "eol:    如果插入模式下在行开头，想通过退格键合并两行，需要设置eol。
+                          "start： 要想删除此次插入前的输入，需设置这个。
+                          
+autocmd FileType php setlocal tabstop=2 shiftwidth=2 softtabstop=2 textwidth=120
+autocmd FileType ruby setlocal tabstop=2 shiftwidth=2 softtabstop=2 textwidth=120
+autocmd FileType php setlocal tabstop=4 shiftwidth=4 softtabstop=4 textwidth=120
+autocmd FileType coffee,javascript setlocal tabstop=2 shiftwidth=2 softtabstop=2 textwidth=120
+autocmd FileType python setlocal tabstop=4 shiftwidth=4 softtabstop=4 textwidth=120
+autocmd FileType html,htmldjango,xhtml,haml setlocal tabstop=2 shiftwidth=2 softtabstop=2 textwidth=0
+autocmd FileType sass,scss,css setlocal tabstop=2 shiftwidth=2 softtabstop=2 textwidth=120
+
+"set cinoptions={0,1s,t0,n-2,p2s,(03s,=.5s,>1s,=1s,:1s     "设置C/C++语言的具体缩进方式 ":help cinoptions-values
+set cindent               " 使用 C/C++ 语言的自动缩进方式
+set smartindent           " 为C程序提供 智能自动缩进
+set autoindent            " 继承前一行的缩进方式 设置自动对齐(缩进) 使用 noautoindent 取消设置
+set copyindent		        " copy the previous indentation on autoindenting
+
+
+
+" Auto indent pasted text
+nnoremap p p=`]<C-o>
+nnoremap P P=`]<C-o>
+
+filetype plugin on
+filetype indent on
+
+" Display tabs and trailing spaces visually
+set list listchars=tab:\ \ ,trail:·
+
+set nowrap       "Don't wrap lines
+set linebreak    "Wrap lines at convenient points
+
+" ================ Folds ============================
+
+set foldnestmax=3       "deepest fold is 3 levels
+set nofoldenable        "默认关闭折叠 dont fold by default
+set foldmethod=indent   "折叠模式
+                        "manual            手工定义折叠
+                        "indent            更多的缩进表示更高级别的折叠
+                        "expr              用表达式来定义折叠
+                        "syntax            用语法高亮来定义折叠
+                        "diff              对没有更改的文本进行折叠
+                        "marker            对文中的标志折叠
+" ================ Completion =======================
+
+set wildchar=<TAB>	        " start wild expansion in the command line using <TAB>
+set wildmode=list:longest
+set wildmenu                "enable ctrl-n and ctrl-p to scroll thru matches
+" 补全时忽略文件 stuff to ignore when tab completing
+set wildignore=*.o,*~,*.pyc,*.class,*.swp,*.obj,*.bak,*.exe,.svn,.git
+set wildignore+=*vim/backups*
+set wildignore+=*sass-cache*
+set wildignore+=*DS_Store*
+set wildignore+=vendor/rails/**
+set wildignore+=vendor/cache/**
+set wildignore+=*.gem
+set wildignore+=log/**
+set wildignore+=tmp/**
+set wildignore+=*.png,*.jpg,*.gif
+
+" ================ Scrolling ========================
+" 光标移动到buffer的顶部和底部时保持3行距离
+set scrolloff=5
+set scrolloff=8         "Start scrolling when we're 8 lines away from margins
+set sidescrolloff=15
+set sidescroll=1
+
+" ================ Search ===========================
+
+set incsearch       " Find the next match as we type the search
+set hlsearch        " Highlight searches by default
+set ignorecase      " Ignore case when searching...
+set smartcase       " ...unless we type a capital
+
+
 " -----------------------------------------------------------------------------
 "                        < 编码配置 >
 " -----------------------------------------------------------------------------
@@ -142,43 +244,6 @@ filetype plugin on                                  "针对不同的文件类型
 filetype plugin indent on                           "启用缩进
 set iskeyword+=_,$,@,%,#,-          " 带有如下符号的单词不要被换行分割
 
-"缩进设置
-set tabstop=4                                       "设置制表符Tab键      宽度
-set softtabstop=4                                   "设置软制表符   宽度
-set shiftwidth=4                                    "换行时自动缩进 宽度
-set expandtab                                       "将Tab键转换为空格
-" 在行和段开始处使用制表符
-set smarttab                                          "指定按一次backspace就删除shiftwidth宽度
-set backspace=indent,eol,start
-"indent: 如果用了:set indent,:set ai 等自动缩进，想用退格键将字段缩进的删掉，必须设置这个选项。否则不响应。
-"eol:如果插入模式下在行开头，想通过退格键合并两行，需要设置eol。
-"start：要想删除此次插入前的输入，需设置这个。
-autocmd! FileType Makefile set noexpandtab
-
-set smartindent                                       "为C程序提供 智能自动缩进
-set autoindent        " 继承前一行的缩进方式 设置自动对齐(缩进) 使用 noautoindent 取消设置
-set cindent            " 使用 C/C++ 语言的自动缩进方式
-"set cinoptions={0,1s,t0,n-2,p2s,(03s,=.5s,>1s,=1s,:1s     "设置C/C++语言的具体缩进方式
-":h cinoptions-values
-
-" 补全时忽略这些忽略文件
-set wildignore=*.o,*~,*.pyc,*.class,*.swp,*.obj,*.bak,*.exe,.svn,.git
-
-set copyindent		" copy the previous indentation on autoindenting
-
-set wildchar=<TAB>	" start wild expansion in the command line using <TAB>
-
-" 增强模式中的命令行 自动完成操作
-set wildmenu            " wild char completion men
-
-set nofoldenable                                      "关闭折叠
-set foldmethod=indent
-"manual            手工定义折叠
-"indent            更多的缩进表示更高级别的折叠
-"expr              用表达式来定义折叠
-"syntax            用语法高亮来定义折叠
-"diff              对没有更改的文本进行折叠
-"marker            对文中的标志折叠
 
 set autoread         " 当文件在外部被修改，自动加载文件
 set autowrite        " 自动把内容写回文件: 如果文件被修改过，在每个 :next、:rewind、:last、:first、:previous、:stop、:suspend、:tag、:!、:make、CTRL-] 和 CTRL-^命令时进行；用 :buffer、CTRL-O、CTRL-I、'{A-Z0-9} 或 `{A-Z0-9} 命令转到别的文件时亦然。
@@ -195,25 +260,17 @@ set noswapfile                              "设置无临时文件
 set linebreak                               " 整词换行
 set whichwrap=b,s,<,>,[,]   " 光标从行首和行末时可以跳到另一行去
 set whichwrap+=<,>,h,l " 退格键和方向键可以换行
-set browsedir=current    "设置文件浏览使用的目录
-"注：
-"last 使用文件浏览器最近访问相同的目录。
-"buffer 使用相关缓冲区的目录。
-"current 使用当前目录。
-"{path} 使用指定目录。
+set browsedir=current     "设置文件浏览使用的目录
+                          "last    使用文件浏览器最近访问相同的目录。
+                          "buffer  使用相关缓冲区的目录。
+                          "current 使用当前目录。
+                          "{path}  使用指定目录。
 
 " Remember info about open buffers on close"
 set viminfo^=%
 " 保存全局变量 Marks
 set viminfo+=!
 
-"create undo file
-if has('persistent_undo')
-    set undolevels=1000         " How many undos
-    set undoreload=10000        " number of lines to save for undo
-    set undofile                " So is persistent undo ...
-    set undodir=$HOME/vimundo/
-endif
 
 " 与windows共享剪贴板  yank to the system register (*)
 set clipboard+=unnamed
@@ -269,8 +326,7 @@ set splitright                  " 新分割窗口在右边
 "set splitbelow                 " 新分割窗口在下边
 set fillchars=vert:\ ,stl:\ ,stlnc:\ " 在被分割的窗口间显示空白，便于阅读
 
-" 光标移动到buffer的顶部和底部时保持3行距离
-set scrolloff=5
+
 
 "--状态行设置--
 set laststatus=2     " 总显示最后一个窗口的状态行；设为1则窗口数多于一个的时候显示最后一个窗口的状态行；0不显示最后一个窗口的状态行
@@ -491,7 +547,7 @@ endif
 " 秒内，而<Leader>cs是先按"\"键再按"c"又再按"s"键；如要修改"<leader>"键，可以把
 " 下面的设置取消注释，并修改双引号中的键为你想要的，如修改为逗号键。
 
-" let mapleader = ";"
+let mapleader = " "
 "
 "
 " 常规模式下用空格键来开关光标行所在折叠（注：zR 展开所有折叠，zM 关闭所有折叠）
@@ -1154,7 +1210,7 @@ Bundle 'kshenoy/vim-signature'
 " 开启/关闭对齐线
 "nnoremap <leader>il :IndentLinesToggle<CR>
 "这句 必须加否则无效 "tab:\|\ "
-set list listchars=tab:\|\ 
+set list listchars=tab:\|\
 " 设置Gvim的对齐线样式
 if g:isGUI
     let g:indentLine_char = "| "
@@ -1440,10 +1496,10 @@ set completeopt=longest,menu
 let OmniCpp_NamespaceSearch = 2
 let OmniCpp_GlobalScopeSearch = 1
 let OmniCpp_ShowAccess = 1
-let OmniCpp_ShowPrototypeInAbbr = 1 " 显示函数参数列表 
+let OmniCpp_ShowPrototypeInAbbr = 1 " 显示函数参数列表
 let OmniCpp_MayCompleteDot = 1   " 输入 .  后自动补全
-let OmniCpp_MayCompleteArrow = 1 " 输入 -> 后自动补全 
-let OmniCpp_MayCompleteScope = 1 " 输入 :: 后自动补全 
+let OmniCpp_MayCompleteArrow = 1 " 输入 -> 后自动补全
+let OmniCpp_MayCompleteScope = 1 " 输入 :: 后自动补全
 let OmniCpp_DefaultNamespaces = ["std", "_GLIBCXX_STD"]
 let OmniCpp_SelectFirstItem = 2
 let OmniCpp_DisplayMode=1
@@ -1577,16 +1633,16 @@ let g:xptemplate_key = '<Tab>'
 " <Leader>bv 垂直分割窗口显示缓存列表，并在缓存列表窗口中打开选定文件
 
 " -----------------------------------------------------------------------------
-"  < minibufexpl 插件配置 > 没有ctrlspace好用 
+"  < minibufexpl 插件配置 > 没有ctrlspace好用
 " -----------------------------------------------------------------------------
 "Bundle 'fholgado/minibufexpl.vim'
 "切换buffer时,多个窗口的错误
 "let g:miniBufExplorerMoreThanOne=0
 "let g:miniBufExplMapCTabSwitchBufs = 1
-"let g:miniBufExplMapWindowNavVim = 1 
-"let g:miniBufExplMapWindowNavArrows = 1 
-"let g:miniBufExplMapCTabSwitchBufs = 1 
-"let g:miniBufExplModSelTarget = 1 
+"let g:miniBufExplMapWindowNavVim = 1
+"let g:miniBufExplMapWindowNavArrows = 1
+"let g:miniBufExplMapCTabSwitchBufs = 1
+"let g:miniBufExplModSelTarget = 1
 
 
 " -----------------------------------------------------------------------------
@@ -1675,7 +1731,7 @@ nmap <Leader>cA <plug>NERDCommenterAppend
 "nmap <Leader>cs <Plug>NERDCommenterSexy
 "nmap <Leader>c$ <plug>NERDCommenterToEOL
 
-"取消注释 
+"取消注释
 "nmap <Leader>cu <Plug>NERDCommenterUncomment
 "复制注释
 "nmap <Leader>cy <Plug>NERDCommenterYank
@@ -1926,5 +1982,3 @@ else
     noremap <leader>e :e $HOME/.vimrc<cr>
     autocmd! bufwritepost .vimrc source %
 endif
-
-
